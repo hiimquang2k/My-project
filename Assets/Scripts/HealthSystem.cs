@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System;
 
 // Create a scriptable object to store health data
 [CreateAssetMenu(fileName = "NewHealthData", menuName = "Game/Health Data")]
@@ -57,35 +58,6 @@ public class HealthSystem : MonoBehaviour
     {
         currentHealth = healthData.maxHealth;
         UpdateUI();
-    }
-
-    public void TakeDamage(int damage)
-    {
-        if (isInvulnerable || currentHealth <= 0) return;
-
-        currentHealth = Mathf.Max(0, currentHealth - damage);
-        
-        // Update UI and notify listeners
-        UpdateUI();
-        OnHealthChanged?.Invoke(currentHealth, healthData.maxHealth);
-
-        // Visual feedback
-        if (spriteRenderer != null && !isFlashing)
-        {
-            StartCoroutine(FlashRoutine());
-        }
-
-        // Start invulnerability period
-        if (healthData.invulnerabilityDuration > 0)
-        {
-            StartCoroutine(InvulnerabilityRoutine());
-        }
-
-        // Check if dead
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
     }
 
     public void Heal(int amount)
@@ -171,16 +143,6 @@ public class HealthSystem : MonoBehaviour
             
             UpdateUI();
             OnHealthChanged?.Invoke(currentHealth, healthData.maxHealth);
-        }
-    }
-
-    public void MeleeAttack(HealthSystem target)
-    {
-        int damage = 10; // Define the damage amount
-        if (target != null)
-        {
-            target.TakeDamage(damage); // Call TakeDamage on the target
-            Debug.Log(gameObject.name + " attacked " + target.gameObject.name + " for " + damage + " damage.");
         }
     }
 }
