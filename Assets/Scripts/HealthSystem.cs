@@ -59,6 +59,37 @@ public class HealthSystem : MonoBehaviour
         currentHealth = healthData.maxHealth;
         UpdateUI();
     }
+    public void TakeDamage(int damage, DamageType damageType)
+    {
+        // Don't take damage if invulnerable or already dead
+        if (isInvulnerable || currentHealth <= 0) return;
+
+        // Apply damage reduction based on damage type if needed
+        // This is where you could implement resistances or vulnerabilities
+        int damageToApply = damage;
+
+        // Apply the damage
+        currentHealth = Mathf.Max(0, currentHealth - damageToApply);
+
+        // Update UI and notify listeners
+        UpdateUI();
+        OnHealthChanged?.Invoke(currentHealth, healthData.maxHealth);
+
+        // Visual feedback
+        if (spriteRenderer != null && !isFlashing)
+        {
+            StartCoroutine(FlashRoutine());
+        }
+
+        // Apply invulnerability
+        StartCoroutine(InvulnerabilityRoutine());
+
+        // Check if entity has died
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
 
     public void Heal(int amount)
     {
